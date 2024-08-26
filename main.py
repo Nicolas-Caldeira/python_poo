@@ -2,16 +2,20 @@ import pickle
 import traceback
 
 from common import *
+from candidatos.pkl import *
 
 FILE_ELEITORES = 'eleitores.pkl'
+FILE_CANDIDATOS = 'candidatos.pkl'
 
 def menu_eleitor():
     print("1-Novo Eleitor")
     print("2-Atualizar Eleitor")
-    print("3-Sair")
-    op = int(input("Digite a opcao [1,2,3]? "))
-    while op not in (1, 2, 3):
-        op = int(input("Digite a opcao [1,2,3]? "))
+    print("3-Novo Candidato")
+    print("4-Atualizar Candidato")
+    print("5-Sair")
+    op = int(input("Digite a opcao [1,2,3,4,5]? "))
+    while op not in (1, 2, 3, 4, 5):
+        op = int(input("Digite a opcao [1,2,3,4,5]? "))
     return op
 
 def inserir_eleitor(eleitores):
@@ -54,6 +58,41 @@ def atualizar_eleitor(eleitores):
     else:
         raise Exception('Titulo inexistente')
 
+def inserir_candidato(candidatos):
+    numero = int(input("Digite o Numero: "))
+
+    if numero in candidatos:
+        raise Exception("Numero já existente!")
+
+    nome = input("Digite o nome: ")
+    RG = input("Digite o RG: ")
+    CPF = input("Digite o CPF: ")
+
+
+    candidato = candidato(nome, RG, CPF, numero)
+    candidatos[candidato.get_numero()] = candidato
+
+    with open(FILE_CANDIDATOS, 'wb') as arquivo:
+        pickle.dump(candidatos, arquivo)
+
+    print('Candidato gravado com sucesso!')
+    print(candidato)
+
+def atualizar_candidato(candidatos):
+    numero = int(input('Digite o numero do candidato: '))
+
+    if numero in candidatos:
+        candidato = candidatos[numero]
+        print(candidato)
+
+        with open(FILE_CANDIDATOS, 'wb') as arquivo:
+            pickle.dump(candidatos, arquivo)
+
+        print('Atualizados dados do candidato!')
+        print(candidato)
+    else:
+        raise Exception('numero inexistente')
+
 if __name__ == "__main__":
     eleitores = {} #dicionário a chave será o titulo
     try:
@@ -66,7 +105,7 @@ if __name__ == "__main__":
         print("Arquivo nao encontrado, nenhum eleitor carregado!")
 
     opcao = 1
-    while opcao in (1,2,3):
+    while opcao in (1,2,3,4,5):
         try:
             opcao = menu_eleitor()
 
@@ -74,7 +113,11 @@ if __name__ == "__main__":
                 inserir_eleitor(eleitores)
             elif opcao == 2:
                 atualizar_eleitor(eleitores)
-            elif opcao == 3:
+            elif opcao ==3:
+                inserir_candidato()
+            elif opcao ==4:
+                atualizar_candidato()
+            elif opcao == 5:
                 print("Saindo!")
                 break
         except Exception as e:
