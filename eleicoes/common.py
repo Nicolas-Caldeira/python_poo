@@ -41,7 +41,7 @@ class Eleitor(Pessoa):
     def get_titulo(self):
         return self.__titulo
 
-class Canditado(Pessoa):
+class Candidato(Pessoa):
     __numero: int
 
     def __init__(self, nome, RG, CPF, numero):

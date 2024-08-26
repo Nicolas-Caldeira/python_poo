@@ -2,7 +2,6 @@ import pickle
 import traceback
 
 from common import *
-from candidatos.pkl import *
 
 FILE_ELEITORES = 'eleitores.pkl'
 FILE_CANDIDATOS = 'candidatos.pkl'
@@ -12,10 +11,11 @@ def menu_eleitor():
     print("2-Atualizar Eleitor")
     print("3-Novo Candidato")
     print("4-Atualizar Candidato")
-    print("5-Sair")
-    op = int(input("Digite a opcao [1,2,3,4,5]? "))
-    while op not in (1, 2, 3, 4, 5):
-        op = int(input("Digite a opcao [1,2,3,4,5]? "))
+    print("5-Mostra ae os candi")
+    print("6-Sair")
+    op = int(input("Digite a opcao [1,2,3,4,5,6]? "))
+    while op not in (1, 2, 3, 4, 5, 6):
+        op = int(input("Digite a opcao [1,2,3,4,5,6]? "))
     return op
 
 def inserir_eleitor(eleitores):
@@ -69,43 +69,59 @@ def inserir_candidato(candidatos):
     CPF = input("Digite o CPF: ")
 
 
-    candidato = candidato(nome, RG, CPF, numero)
+    candidato = Candidato(nome, RG, CPF, numero)
     candidatos[candidato.get_numero()] = candidato
 
-    with open(FILE_CANDIDATOS, 'wb') as arquivo:
-        pickle.dump(candidatos, arquivo)
+    with open(FILE_CANDIDATOS, 'wb') as arquivo2:
+        pickle.dump(candidatos, arquivo2)
 
     print('Candidato gravado com sucesso!')
     print(candidato)
 
 def atualizar_candidato(candidatos):
     numero = int(input('Digite o numero do candidato: '))
+    candidato = candidatos[numero]
+    nome = input("Novo nome:")
+    candidato.nome=nome
+    with open(FILE_CANDIDATOS, 'wb') as arquivo2:
+        pickle.dump(candidatos, arquivo2)
 
-    if numero in candidatos:
-        candidato = candidatos[numero]
-        print(candidato)
+    print('Atualizados dados do candidato!')
+    print(candidatos)
 
-        with open(FILE_CANDIDATOS, 'wb') as arquivo:
-            pickle.dump(candidatos, arquivo)
 
-        print('Atualizados dados do candidato!')
-        print(candidato)
-    else:
-        raise Exception('numero inexistente')
+def listar_candidatos(candidatos):
+    for c in candidatos.values():
+        print(c)
+
 
 if __name__ == "__main__":
     eleitores = {} #dicionário a chave será o titulo
+    candidatos = {}
     try:
         print("Carregando arquivo de eleitores ...")
 
         with open(FILE_ELEITORES, 'rb') as arquivo:
             eleitores = pickle.load(arquivo)
+
+
     except FileNotFoundError as fnfe:
         print(fnfe)
         print("Arquivo nao encontrado, nenhum eleitor carregado!")
 
+    try:
+        print("Carregando arquivo de eleitores ...")
+
+        with open(FILE_CANDIDATOS, 'rb') as arquivo2:
+            candidatos = pickle.load(arquivo2)
+
+    except FileNotFoundError as fnfe:
+        print(fnfe)
+        print("Arquivo nao encontrado, nenhum eleitor carregado!")
+
+
     opcao = 1
-    while opcao in (1,2,3,4,5):
+    while opcao in (1,2,3,4,5,6):
         try:
             opcao = menu_eleitor()
 
@@ -113,11 +129,13 @@ if __name__ == "__main__":
                 inserir_eleitor(eleitores)
             elif opcao == 2:
                 atualizar_eleitor(eleitores)
-            elif opcao ==3:
-                inserir_candidato()
-            elif opcao ==4:
-                atualizar_candidato()
-            elif opcao == 5:
+            elif opcao == 3:
+                inserir_candidato(candidatos)
+            elif opcao == 4:
+                atualizar_candidato(candidatos)
+            elif opcao ==5:
+                listar_candidatos(candidatos)
+            elif opcao == 6:
                 print("Saindo!")
                 break
         except Exception as e:
